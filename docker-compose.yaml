@@ -1,17 +1,17 @@
 version: "3.8"
 services:
   n8n:
-    image: n8nio/n8n
-    restart: always
+    image: n8nio/n8n:latest
     ports:
       - "5678:5678"
     environment:
-      - GENERIC_TIMEZONE=UTC
-      - N8N_PORT=5678
       - N8N_BASIC_AUTH_ACTIVE=true
-      - N8N_BASIC_AUTH_USER=${N8N_BASIC_AUTH_USER}
-      - N8N_BASIC_AUTH_PASSWORD=${N8N_BASIC_AUTH_PASSWORD}
-      - PUSHOVER_USER_KEY=${PUSHOVER_USER_KEY}
-      - PUSHOVER_API_TOKEN=${PUSHOVER_API_TOKEN}
-      - AIRTABLE_API_KEY=${AIRTABLE_API_KEY}
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - N8N_BASIC_AUTH_USER=${N8N_USER}
+      - N8N_BASIC_AUTH_PASSWORD=${N8N_PASSWORD}
+      - WEBHOOK_URL=https://your-railway-domain.up.railway.app/
+      - GENERIC_TIMEZONE=Europe/Berlin
+    volumes:
+      - n8n_data:/home/node/.n8n
+
+volumes:
+  n8n_data:
