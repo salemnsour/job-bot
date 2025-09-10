@@ -1,0 +1,622 @@
+{
+  "name": "My workflow 2",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "filters": {
+          "labelIds": [
+            "Label_1072597590141798757"
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        480,
+        -160
+      ],
+      "id": "cb1bd7f8-e904-429d-9a52-c2213858308a",
+      "name": "Gmail Trigger",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "kaYbj7MAso4N1pV5",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appLfPNKttcBNmm67",
+          "mode": "list",
+          "cachedResultName": "Job Emails",
+          "cachedResultUrl": "https://airtable.com/appLfPNKttcBNmm67"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblehPlu8kgY5QfRp",
+          "mode": "list",
+          "cachedResultName": "Jobs",
+          "cachedResultUrl": "https://airtable.com/appLfPNKttcBNmm67/tblehPlu8kgY5QfRp"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Position": "={{$json[\"Subject\"]}}",
+            "Email ID": "={{$json[\"Id\"]}}",
+            "Recieved Date": "={{$json[\"RecievedDate\"]}}",
+            "Company": "={{$json[\"From\"]}}",
+            "Body": "={{$json[\"Body\"]}}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Company",
+              "displayName": "Company",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Position",
+              "displayName": "Position",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Recieved Date",
+              "displayName": "Recieved Date",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Email ID",
+              "displayName": "Email ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Body",
+              "displayName": "Body",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "typecast": true
+        }
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        672,
+        160
+      ],
+      "id": "3d39c8c9-1c2d-40d5-abb2-d3d1cfff342f",
+      "name": "Create a record",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "5wtHiq1N1wNBs3zH",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(item => {\n    const dateMs = parseInt(item.json.internalDate);\n    const isoDate = new Date(dateMs).toISOString();\n\n    // Use snippet as the body\n    let body = item.json.snippet || \"No body found\";\n\n    // Optional cleanup\n    body = body.replace(/(On.*wrote:)/gs, '')\n               .replace(/(Click here to unsubscribe.*)/gi, '')\n               .replace(/\\s{2,}/g, ' ')\n               .trim();\n\n    return {\n        json: {\n            From: item.json.From || \"N/A\",\n            Subject: item.json.Subject || \"N/A\",\n            Id: item.json.id,\n            RecievedDate: isoDate,\n            Body: body\n        }\n    };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        160
+      ],
+      "id": "42f5b020-27a6-4ae7-90a3-fc01be460a8b",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 3
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        944,
+        -160
+      ],
+      "id": "a4b573e0-bc60-4369-beb5-d9b1bc755b0d",
+      "name": "Schedule Trigger1"
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appLfPNKttcBNmm67",
+          "mode": "list",
+          "cachedResultName": "Job Emails",
+          "cachedResultUrl": "https://airtable.com/appLfPNKttcBNmm67"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblehPlu8kgY5QfRp",
+          "mode": "list",
+          "cachedResultName": "Jobs",
+          "cachedResultUrl": "https://airtable.com/appLfPNKttcBNmm67/tblehPlu8kgY5QfRp"
+        },
+        "filterByFormula": "=IS_AFTER({Recieved Date}, DATETIME_PARSE(\"{{ new Date(Date.now() - 24*60*60*1000).toISOString() }}\"))",
+        "options": {},
+        "sort": {
+          "property": [
+            {
+              "field": "Recieved Date",
+              "direction": "desc"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        1216,
+        -112
+      ],
+      "id": "9dabc24d-83c5-4671-ba4e-56d3cc6504be",
+      "name": "Search records",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "5wtHiq1N1wNBs3zH",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "if (items.length === 0) {\n    return [{ json: { summary: \"No new job emails today.\" } }];\n}\n\nlet message = `📬 Daily Job Summary:\\n\\n`;\n\nitems.forEach((item, index) => {\n    // Access fields directly under item.json\n    const record = item.json;\n    message += `${index + 1}. Company: ${record.Company || \"N/A\"}\\n`;\n    message += `   Position: ${record.Position || \"N/A\"}\\n`;\n    message += `   Received: ${record[\"Recieved Date\"] || \"N/A\"}\\n\\n`;\n});\n\nmessage += `Total new job emails: ${items.length}`;\n\nreturn [{ json: { summary: message } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        960,
+        144
+      ],
+      "id": "6526661a-b57e-429e-9ee0-8bafe28abd68",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "messageId": "={{$json[\"id\"]}}"
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        688,
+        -64
+      ],
+      "id": "d4e42ede-1cbe-4ac2-8ae9-c89eccbcdc82",
+      "name": "Get a message",
+      "webhookId": "dae254cd-5513-47ab-8828-cdf0366916ca",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "kaYbj7MAso4N1pV5",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "filters": {
+          "labelIds": [
+            "INBOX"
+          ],
+          "q": "=-label:jobs"
+        }
+      },
+      "id": "073347f2-faa8-41fe-b588-e60ed6e948dd",
+      "name": "New Email Trigger",
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -32,
+        0
+      ],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "kaYbj7MAso4N1pV5",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Categorize this email:\n\n**From:** {{ $json.From }}\n**Subject:** {{ $json.Subject }}\n**Content:** \n{{ $json.snippet}}\n\nPlease analyze this email and apply appropriate labels using the available tools.",
+        "options": {
+          "systemMessage": "=You are an email categorization assistant. Your task is to analyze emails and apply the \"jobs\" label whenever an email is related to work, careers, job offers, or opportunities.\n\nYou have access to 1 tool:\n1. Add Labels - Applies labels to emails\n\n### Instructions:\n- Analyze email content for: subject, sender, keywords, and context\n- Apply the \"jobs\" label if the email is career-related\n- If unsure, do not apply any label\n- Use the \"Add Labels\" tool to apply the label\n\n### Response Format:\n1. Brief summary of email content (1 sentence)\n2. State whether to apply the \"jobs\" label with reasoning\n3. Use \"Add Labels\" tool with the label if applicable\n"
+        }
+      },
+      "id": "453f6cd3-2f2b-4f0d-9a1d-c13f009b47cf",
+      "name": "Email Classification Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        160,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "addLabels",
+        "messageId": "={{ $json.id }}",
+        "labelIds": [
+          "Label_1072597590141798757"
+        ]
+      },
+      "id": "9229c24d-33c3-41b2-be98-515f9604f366",
+      "name": "Add Label",
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        128,
+        240
+      ],
+      "webhookId": "e7289911-d937-45bd-9e91-410a0dc959f8",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "kaYbj7MAso4N1pV5",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "id": "cce72f87-4e35-475c-b421-d61590e42d03",
+      "name": "Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -16,
+        240
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "PWC5wPfmMoMEuqYY",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4.1-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are an assistant that rephrases and highlights the most important emails from a daily summary.\n\nHere is the summary:\n{{$json.summary}}\n\nPlease rephrase it and highlight the most important emails.\n",
+              "role": "system"
+            },
+            {
+              "content": "You are an assistant that rephrases and highlights the most important emails from a daily summary.\n"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        1184,
+        144
+      ],
+      "id": "5eb9ce5b-2414-4ea9-b226-5c4d619804dd",
+      "name": "Message a model",
+      "credentials": {
+        "openAiApi": {
+          "id": "PWC5wPfmMoMEuqYY",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "userKey": "uk4fnwo6hu8x1mmiwnnk61174p2ysm",
+        "message": "={{$json[\"pushoverMessage\"]}}\n",
+        "priority": 0,
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.pushover",
+      "typeVersion": 1,
+      "position": [
+        1184,
+        368
+      ],
+      "id": "210c821c-064b-400e-a887-17bdadee10f5",
+      "name": "Push a message",
+      "credentials": {
+        "pushoverApi": {
+          "id": "GnqtnbwBBzBr63vv",
+          "name": "Pushover account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(item => {\n    const pushoverMessage = item.json?.message?.content || \"No message content available\";\n\n    return {\n        json: {\n            pushoverMessage,\n            title: \"📬 Daily Job Email Summary\",\n            priority: 0\n        }\n    };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        976,
+        368
+      ],
+      "id": "55b202d3-7ad3-4de3-af61-74793ad29f15",
+      "name": "Code2"
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(item => {\n    return {\n        json: {\n            Company: item.json.Company,\n            Position: item.json.Position,\n            \"Recieved Date\": item.json[\"Recieved Date\"],\n\n            // Carry this ID forward for deletion\n            recordId: item.json.id\n        }\n    };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1584,
+        80
+      ],
+      "id": "781d7e3e-19da-486d-84eb-ac293d207a47",
+      "name": "Code3"
+    },
+    {
+      "parameters": {
+        "operation": "deleteRecord",
+        "base": {
+          "__rl": true,
+          "value": "appLfPNKttcBNmm67",
+          "mode": "list",
+          "cachedResultName": "Job Emails",
+          "cachedResultUrl": "https://airtable.com/appLfPNKttcBNmm67"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblehPlu8kgY5QfRp",
+          "mode": "list",
+          "cachedResultName": "Jobs",
+          "cachedResultUrl": "https://airtable.com/appLfPNKttcBNmm67/tblehPlu8kgY5QfRp"
+        },
+        "id": "={{ $json.recordId }}"
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        1600,
+        320
+      ],
+      "id": "a956d03f-2861-4551-90c1-231a89712342",
+      "name": "Delete a record",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "5wtHiq1N1wNBs3zH",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Create a record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger1": {
+      "main": [
+        [
+          {
+            "node": "Search records",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search records": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Code3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a message": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "New Email Trigger": {
+      "main": [
+        [
+          {
+            "node": "Email Classification Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add Label": {
+      "ai_tool": [
+        [
+          {
+            "node": "Email Classification Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Email Classification Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Code2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Push a message": {
+      "main": [
+        []
+      ]
+    },
+    "Code2": {
+      "main": [
+        [
+          {
+            "node": "Push a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code3": {
+      "main": [
+        [
+          {
+            "node": "Delete a record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "fb2d2936-c330-450e-ba1c-f011e05bc4f5",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "77493fb561014174d31b676a1425641f75fbc3bfee3d4171636a010a7ed0c822"
+  },
+  "id": "aiqx6EQc8XUolKES",
+  "tags": []
+}
